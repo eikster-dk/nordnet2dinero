@@ -9,7 +9,7 @@ use encoding_rs::UTF_16LE;
 use encoding_rs_io::DecodeReaderBytesBuilder;
 
 #[derive(Debug, Deserialize)]
-struct nordnet_record {
+struct NordnetRecord {
     #[serde(rename = "Bogføringsdag")]
     date: String,
 
@@ -17,7 +17,7 @@ struct nordnet_record {
     company: String,
 
     #[serde(rename = "Transaktionstype")]
-    transaction_type: nordnet_transaction_type,
+    transaction_type: NordnetTransactionType,
 
     #[serde(rename = "Transaktionstekst")]
     transaction_text: String,
@@ -36,21 +36,21 @@ struct nordnet_record {
 }
 
 #[derive(Debug, Deserialize)]
-enum nordnet_transaction_type {
+enum NordnetTransactionType {
     #[serde(rename = "KØBT")]
-    purchase,
+    Purchase,
 
     #[serde(rename = "UDB.")]
-    dividend,
+    Dividend,
 
     #[serde(rename = "UDBYTTESKAT")]
-    dividend_tax,
+    DividendTax,
 
     #[serde(rename = "DEPOTRENTE")]
-    interest,
+    Interest,
 
     #[serde(rename = "INDBETALING")]
-    payment,
+    Payment,
 }
 
 fn read_nordnet_csv() -> Result<(), Box<dyn Error>> {
@@ -65,7 +65,7 @@ fn read_nordnet_csv() -> Result<(), Box<dyn Error>> {
         .from_reader(transcoded);
 
     for result in reader.deserialize() {
-        let record: nordnet_record = result?;
+        let record: NordnetRecord = result?;
         println!("{:?}", record);
     }
     Ok(())
