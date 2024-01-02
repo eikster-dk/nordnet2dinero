@@ -165,7 +165,7 @@ func (c *Converter) dividend(transaction NordnetTransaction) {
 			Text:                   fmt.Sprintf("Udbytteskat - %s, ISIN: %s", taxTransaction.Company, taxTransaction.ISIN),
 			Account:                "55020",
 			AccountVatType:         "Ingen moms",
-			BalanceAccount:         "9020",
+			BalanceAccount:         "54055",
 			BalanaceACcountVatType: "Ingen moms",
 			Amount:                 DanishAmount(taxTransaction.Total + taxTransaction.TransactionFee),
 			ForeignAmount:          DanishAmount(0),
