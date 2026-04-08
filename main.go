@@ -100,8 +100,10 @@ func (c *Converter) Convert() []DineroRecord {
 		switch transaction.TransactionType {
 		case "KØBT":
 			c.purchase(transaction)
-		case "UDB.":
+		case "UDB.", "UDBYTTE":
 			c.dividend(transaction)
+		case "UDBYTTESKAT", "KORR. AF UDBYTTESKAT":
+			c.dividendTax(transaction)
 		case "DEPOTRENTE":
 			c.interest(transaction)
 		}
@@ -156,7 +158,7 @@ func (c *Converter) dividend(transaction NordnetTransaction) {
 	}
 	c.dineroItems = append(c.dineroItems, record)
 
-	if c.peak().TransactionType == "UDBYTTESKAT" {
+	if c.peak().TransactionType == "UDBYTTESKAT" || c.peak().TransactionType == "KORR. AF UDBYTTESKAT" {
 		taxTransaction, _ := c.next()
 
 		tax := DineroRecord{
@@ -183,6 +185,22 @@ func (c *Converter) interest(transaction NordnetTransaction) {
 		Account:                "55020",
 		AccountVatType:         "Ingen moms",
 		BalanceAccount:         "9200",
+		BalanaceACcountVatType: "Ingen moms",
+		Amount:                 DanishAmount(transaction.Total + transaction.TransactionFee),
+		ForeignAmount:          DanishAmount(0),
+	}
+	c.dineroItems = append(c.dineroItems, record)
+}
+
+func (c *Converter) dividendTax(transaction NordnetTransaction) {
+	voucherNumber := c.nextVoucher()
+	record := DineroRecord{
+		Number:                 voucherNumber,
+		Date:                   transaction.Date.Format("02/01/2006"),
+		Text:                   fmt.Sprintf("Udbytteskat - %s, ISIN: %s", transaction.Company, transaction.ISIN),
+		Account:                "55020",
+		AccountVatType:         "Ingen moms",
+		BalanceAccount:         "54055",
 		BalanaceACcountVatType: "Ingen moms",
 		Amount:                 DanishAmount(transaction.Total + transaction.TransactionFee),
 		ForeignAmount:          DanishAmount(0),

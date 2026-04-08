@@ -29,6 +29,12 @@ type NordnetAmount float64
 
 func (f *NordnetAmount) UnmarshalText(data []byte) error {
 	s := string(data)
+	s = strings.TrimSpace(s)
+	if s == "" || s == "-" {
+		*f = 0
+		return nil
+	}
+
 	s = strings.ReplaceAll(s, ".", "")
 	s = strings.ReplaceAll(s, ",", ".")
 
